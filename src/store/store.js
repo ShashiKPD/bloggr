@@ -6,3 +6,5 @@ const store = configureStore({
         authReducer
     }
 })
+
+export default store;
