@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Input, RTE, Select } from "..";
 import appwriteService from "../../appwrite/config";
@@ -6,15 +6,22 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 export default function PostForm({ post }) {
-  const { register, handleSubmit, watch, setValue, control, getValues } =
-    useForm({
-      defaultValues: {
-        title: post?.title || "",
-        slug: post?.$id || "",
-        content: post?.content || "",
-        status: post?.status || "active",
-      },
-    });
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    control,
+    getValues,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      title: post?.title || "",
+      slug: post?.$id || "",
+      content: post?.content || "",
+      status: post?.status || "active",
+    },
+  });
 
   const navigate = useNavigate();
   const userData = useSelector((state) => state.auth.userData);
@@ -82,9 +89,13 @@ export default function PostForm({ post }) {
         <Input
           label="Title :"
           placeholder="Title"
-          className="mb-4"
-          {...register("title", { required: true })}
+          className={`${errors.image ? "border-red-500 mb-1" : "mb-4"}`}
+          {...register("title", { required: "Title is required" })}
         />
+        {errors.title && (
+          <div className="text-red-700 text-left">{errors.title.message}</div>
+        )}
+
         <Input
           label="Slug :"
           placeholder="Slug"
@@ -107,10 +118,17 @@ export default function PostForm({ post }) {
         <Input
           label="Featured Image :"
           type="file"
-          className="mb-4"
+          className={`${errors.image ? "border-red-500 mb-1" : "mb-4"}`}
           accept="image/png, image/jpg, image/jpeg, image/gif"
-          {...register("image", { required: !post })}
+          {...register("image", {
+            required: post ? false : "Featured Image is required",
+          })}
         />
+        {errors.image && (
+          <div className="text-red-700 text-left mb-4">
+            {errors.image.message}
+          </div>
+        )}
         {post && (
           <div className="w-full mb-4">
             <img

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { login as authLogin } from "../store/authSlice";
 import authService from "../appwrite/auth";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,13 +7,13 @@ import { Button, Input, Logo } from "./index";
 import { useForm } from "react-hook-form";
 
 function Login() {
-  const [error, seterror] = useState(second);
+  const [error, setError] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [register, handleSubmit] = useForm();
+  const { register, handleSubmit } = useForm();
 
   const login = async (data) => {
-    seterror("");
+    setError("");
     try {
       const response = await authService.login(data);
       if (response) {
@@ -22,8 +22,7 @@ function Login() {
         navigate("/");
       }
     } catch (error) {
-      console.log(error);
-      seterror(error.message);
+      setError(error.message);
     }
   };
   return (
